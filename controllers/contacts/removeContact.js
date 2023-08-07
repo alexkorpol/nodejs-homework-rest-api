@@ -8,14 +8,10 @@ const removeContact = async (req, res) => {
   if (!result) {
     throw new NotFound(`Not found`);
   }
-  res.json({
-    status: 'success',
-    code: 200,
+  res.status(200).json({
     message: 'contact deleted',
-    data: {
-      result,
-    },
-  });
+  });  
 };
 
 module.exports = removeContact;
+ 

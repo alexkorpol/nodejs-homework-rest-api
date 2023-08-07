@@ -8,13 +8,7 @@ const updateContact = async (req, res) => {
   if (!result) {
     throw new NotFound(`Not found`);
   }
-  res.json({
-    status: 'success',
-    code: 200,
-    data: {
-      result,
-    },
-  });
+  res.status(200).json(result);
 };
 
 module.exports = updateContact;

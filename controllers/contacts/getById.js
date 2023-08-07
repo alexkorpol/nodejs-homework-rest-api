@@ -4,7 +4,7 @@ const contactsOperations = require('../../models/contacts');
 
 const getById = async (req, res) => {
   const { id } = req.params;
-  const result = await contactsOperations.getContactById(id);
+  const result = await contactsOperations.getById(id);
   if (!result) {
     throw new NotFound(`Not found`);
   }

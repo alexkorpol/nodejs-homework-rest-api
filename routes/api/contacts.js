@@ -45,15 +45,16 @@ validateMiddleware = (req, res, next)=> {
     }
 */
 // const router = express.Router();+++
-
-router.get('/', ctrlWrapper(ctrl.getAll));
+console.log("ctrlWrapper", ctrlWrapper);
+console.log("ctrl.listContacts", ctrl.listContacts);
+router.get('/', ctrlWrapper(ctrl.listContacts));
 
 router.get('/:id', ctrlWrapper(ctrl.getById));
 
-router.post('/', validateMiddleware, ctrlWrapper(ctrl.add));
+router.post('/', validateMiddleware, ctrlWrapper(ctrl.addContact));
 
-router.put('/:id', validation(contactSchema), ctrlWrapper(ctrl.updateById));
+router.put('/:id', validation(contactSchema), ctrlWrapper(ctrl.updateContact));
 
-router.delete('/:id', ctrlWrapper(ctrl.removeById));
+router.delete('/:id', ctrlWrapper(ctrl.removeContact));
 
 module.exports = router;

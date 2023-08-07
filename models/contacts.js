@@ -20,10 +20,12 @@ console.log('contactsPath', contactsPath);
 const listContacts = async () => {
   const data = await fs.readFile(contactsPath);
   const contacts = JSON.parse(data);
+  console.log('This function is listContacts');
+
   return contacts;
 };
 
-const getContactById = async contactId => {
+const getById = async contactId => {
   const contacts = await listContacts();
   const result = contacts.find(item => item.id === contactId);
   if (!result) {
@@ -43,9 +45,9 @@ const removeContact = async contactId => {
   return contacts[idx];
 };
 
-const addContact = async (name, email, phone) => {
+const addContact = async (data) => {
   const contacts = await listContacts();
-  const newContact = { name, email, phone, id: nanoid() };
+  const newContact = { ...data, id: nanoid() };
   contacts.push(newContact);
   await updateContactsAll(contacts);
   return newContact;
@@ -68,7 +70,7 @@ const updateContact = async (id, data) => {
 
 module.exports = {
   listContacts,
-  getContactById,
+  getById,
   removeContact,
   addContact,
   updateContact,

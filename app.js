@@ -1,6 +1,10 @@
+// MNSONfi48P3Goixq
+// mongodb+srv://alexkorpol1964:MNSONfi48P3Goixq@alexcluster.8rwbhme.mongodb.net/
+// mongodb+srv://alexkorpol1964:ghKW4YRykTfBMBn1@phonebook.hgelny4.mongodb.net/
 const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
+require("dotenv").config()
 
 const contactsRouter = require('./routes/api/contacts')
 
@@ -25,3 +29,5 @@ app.use((err, req, res, next) => {
 })
 
 module.exports = app
+
+

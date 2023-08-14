@@ -1,62 +1,131 @@
-const fs = require('fs/promises');
-const { nanoid } = require('nanoid');
-const contactsPath = require('./contactsPath');
+const {Schema, model} = require("mongoose");
+const Joi = require("joi");
 
-const listContacts = async () => {
-  const data = await fs.readFile(contactsPath);
-  const contacts = JSON.parse(data);
+const phoneNumberRegexp = /^(?:(?:\+?|\()?[\d\s()-]*\d[\d\s()-]*){7,14}$/;
 
-  return contacts;
-};
+const contactSchemaBD = new Schema({
+    name: {
+        type: String,
+        required: [true, "Name is required. Please, fill name for contact"],
+    },
+    email: {
+        type: String,
+        required: [true, "Email is required. Please, fill Email for contact"],
+    },
+    phone: {
+        type: String,
+      match: phoneNumberRegexp,
+      required: [true, "Phone is required. Please, fill phone for contact"],
+    },
+    favorite: {
+      type: Boolean,
+      default: false,
+    },
+},
+    { versionKey: false, timestamps: true });
 
-const getById = async contactId => {
-  const contacts = await listContacts();
-  const result = contacts.find(item => item.id === contactId);
-  if (!result) {
-    return null;
-  }
-  return result;
-};
+const contactJoiSchema = Joi.object({
+  name: Joi.string()
+    .required()
+    .messages({
+    "any.required": "missing required name field",
+  }),
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .required()
+    .messages({
+      "any.required": "missing required email field",
+    }),
+  phone: Joi.string()
+    .min(10).max(15)
+    .required()
+    .messages({
+    "any.required": "missing required phone field",
+    }),
+  favorite: Joi.boolean()
+    .messages({
+    "any.required": "missing fields favorite",
+    }),
+});
 
-const removeContact = async contactId => {
-  const contacts = await listContacts();
-  const idx = contacts.findIndex(item => item.id === contactId);
-  if (idx === -1) {
-    return null;
-  }
-  const newContacts = contacts.filter((_, index) => index !== idx);
-  await updateContactsAll(newContacts);
-  return contacts[idx];
-};
+const favoriteJoiSchema = Joi.object({
+  favorite: Joi.boolean().required().messages({
+    "any.required": "missing fields favorite",
+  }),
+});
 
-const addContact = async (data) => {
-  const contacts = await listContacts();
-  const newContact = { ...data, id: nanoid() };
-  contacts.push(newContact);
-  await updateContactsAll(contacts);
-  return newContact;
-};
-
-const updateContactsAll = async contacts => {
-  await fs.writeFile(contactsPath, JSON.stringify(contacts));
-};
-
-const updateContact = async (id, data) => {
-  const contacts = await listContacts();
-  const idx = contacts.findIndex(item => item.id === id);
-  if (idx === -1) {
-    return null;
-  }
-  contacts[idx] = { ...data, id };
-  await updateContactsAll(contacts);
-  return contacts[idx];
-};
+const Contact = model("contact", contactSchemaBD);
 
 module.exports = {
-  listContacts,
-  getById,
-  removeContact,
-  addContact,
-  updateContact,
-};
-    
+    Contact,
+    contactJoiSchema,
+    favoriteJoiSchema
+}
+
+// !=========================
+// const { handleMongooseError } = require("../helpers");???????????
+// const { Schema, model } = require("mongoose");
+// const Joi = require("joi");
+
+// const phoneRegexp = /^(?:(?:\+?|\()?[\d\s()-]*\d[\d\s()-]*){7,14}$/;
+
+// const contactSchema = new Schema(
+//   {
+//     name: {
+//       type: String,
+//       required: [true, "Name is required. Set name for contact"],
+//     },
+//     email: {
+//       type: String,
+//       required: [true, "Email is required. Set email for contact"],
+//     },
+//     phone: {
+//       type: String,
+//       match: phoneRegexp,
+//       required: [true, "Phone is required. Set phone for contact"],
+//     },
+//     favorite: {
+//       type: Boolean,
+//       default: false,
+//     },
+//   },
+//   { versionKey: false, timestamps: true }
+// );
+
+// contactSchema.post("save", handleMongooseError);?????????????
+
+// const addSchema = Joi.object({
+//   name: Joi.string().required().messages({
+//     "any.required": "missing required name field",
+//   }),
+//   email: Joi.string()
+//     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+//     .required()
+//     .messages({
+//       "any.required": "missing required email field",
+//     }),
+//   phone: Joi.string().min(10).max(15).required().pattern(phoneRegexp).messages({
+//     "any.required": "missing required phone field",
+//   }),
+//   favorite: Joi.boolean().messages({
+//     "any.required": "missing fields favorite",
+//   }),
+// });
+
+// const updateFavoretesSchema = Joi.object({
+//   favorite: Joi.boolean().required().messages({
+//     "any.required": "missing fields favorite",
+//   }),
+// });
+
+// const schemas = {
+//   addSchema,
+//   updateFavoretesSchema,
+// };
+
+// const Contact = model("contact", contactSchema);
+
+// module.exports = {
+//   Contact,
+//   schemas,
+// };

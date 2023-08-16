@@ -17,9 +17,11 @@ router.post('/', emptyBody, validateMiddleware, ctrlWrapper(ctrl.addContact));
 
 router.put('/:id', emptyBody, isValidid, validateMiddleware, ctrlWrapper(ctrl.updateContact));
 
-router.patch('/:id/favorite', isValidid, validation(favoriteJoiSchema),    
-            ctrl.updateStatusContact
-);
+router.patch(
+  '/:id/favorite',
+  isValidid,
+  validation(favoriteJoiSchema),
+  ctrlWrapper(ctrl.updateStatusContact));
 
 router.delete('/:id', isValidid,ctrlWrapper(ctrl.removeContact));
 

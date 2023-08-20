@@ -1,28 +1,58 @@
-const express = require('express')
+const express = require('express');
 
-const router = express.Router()
+const router = express.Router();
 
-const { validation, ctrlWrapper, emptyBody, isValidid } = require('../../middlewares');
-const { contactJoiSchema, favoriteJoiSchema} = require('../../models/contacts');
+const {
+  validation,
+  ctrlWrapper,
+  emptyBody,
+  isValidid,
+  auth
+} = require('../../middlewares');
+const {
+  contactJoiSchema,
+  favoriteJoiSchema,
+} = require('../../models/contacts');
 const { contacts: ctrl } = require('../../controllers');
 
 const validateMiddleware = validation(contactJoiSchema);
 
+router.get(
+  '/',
+  auth,
+  ctrlWrapper(ctrl.listContacts));
 
-router.get('/', ctrlWrapper(ctrl.listContacts));
+router.get(
+  '/:id',
+  auth,
+  isValidid,
+  ctrlWrapper(ctrl.getById));
 
-router.get('/:id', isValidid,ctrlWrapper(ctrl.getById));
+router.post(
+  '/',
+  auth,
+  emptyBody,
+  validateMiddleware,
+  ctrlWrapper(ctrl.addContact)
+);
 
-router.post('/', emptyBody, validateMiddleware, ctrlWrapper(ctrl.addContact));
-
-router.put('/:id', emptyBody, isValidid, validateMiddleware, ctrlWrapper(ctrl.updateContact));
+router.put(
+  '/:id',
+  auth,
+  emptyBody,
+  isValidid,
+  validateMiddleware,
+  ctrlWrapper(ctrl.updateContact)
+);
 
 router.patch(
   '/:id/favorite',
+  auth,
   isValidid,
   validation(favoriteJoiSchema),
-  ctrlWrapper(ctrl.updateStatusContact));
+  ctrlWrapper(ctrl.updateStatusContact)
+);
 
-router.delete('/:id', isValidid,ctrlWrapper(ctrl.removeContact));
+router.delete('/:id', isValidid, ctrlWrapper(ctrl.removeContact));
 
 module.exports = router;

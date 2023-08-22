@@ -3,26 +3,32 @@ const Joi = require("joi");
 
 const phoneNumberRegexp = /^(?:(?:\+?|\()?[\d\s()-]*\d[\d\s()-]*){7,14}$/;
 
-const contactSchemaBD = new Schema({
+const contactSchemaBD = new Schema(
+  {
     name: {
-        type: String,
-        required: [true, "Name is required. Please, fill name for contact"],
+      type: String,
+      required: [true, 'Name is required. Please, fill name for contact'],
     },
     email: {
-        type: String,
-        required: [true, "Email is required. Please, fill Email for contact"],
+      type: String,
+      required: [true, 'Email is required. Please, fill Email for contact'],
     },
     phone: {
-        type: String,
+      type: String,
       match: phoneNumberRegexp,
-      required: [true, "Phone is required. Please, fill phone for contact"],
+      required: [true, 'Phone is required. Please, fill phone for contact'],
     },
     favorite: {
       type: Boolean,
       default: false,
     },
-},
-    { versionKey: false, timestamps: true });
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+  },
+  { versionKey: false, timestamps: true }
+);
 
 const contactJoiSchema = Joi.object({
   name: Joi.string()

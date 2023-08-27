@@ -5,7 +5,8 @@ const router = express.Router();
 const {
   validation,
   ctrlWrapper,
-  auth
+  auth,
+  upload,
 } = require('../../middlewares');
 
 const { joiRegisterSchema } = require('../../models/user');
@@ -35,5 +36,11 @@ router.post(
 router.post('/logout',
   auth,
   ctrlWrapper(ctrl.logout));
+
+// update avatar 
+router.patch('/avatars',
+  auth,
+  upload.single("avatar"),
+  ctrlWrapper(ctrl.updateAvatar));
 
 module.exports = router;

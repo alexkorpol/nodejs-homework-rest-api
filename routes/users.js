@@ -7,11 +7,11 @@ const {
   ctrlWrapper,
   auth,
   upload,
-} = require('../../middlewares');
+} = require('../middlewares');
 
-const { joiRegisterSchema } = require('../../models/user');
+const { joiRegisterSchema, joiEmailSchema } = require('../models/user');
 
-const { users: ctrl } = require('../../controllers');
+const { users: ctrl } = require('../controllers');
 
 // registration
 router.post(
@@ -42,5 +42,12 @@ router.patch('/avatars',
   auth,
   upload.single("avatar"),
   ctrlWrapper(ctrl.updateAvatar));
+
+router.get('/verify/:verificationToken',
+  ctrlWrapper(ctrl.verifyEmail));
+
+router.post('/verify',
+  validation(joiEmailSchema),
+  ctrlWrapper(ctrl.verify));
 
 module.exports = router;
